@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TeloHive Flix</title>
+  <style>
+    /* ── Theme variables ── */
+    :root {
+      --bg:          #141414;
+      --surface:     #1c1c1c;
+      --surface-h:   #252525;
+      --border:      #2e2e2e;
+      --text:        #ffffff;
+      --text-sub:    #b3b3b3;
+      --text-muted:  #666666;
+      --red:         #e50914;
+      --red-h:       #f40612;
+      --green:       #46d369;
+      --yellow:      #e5c714;
+      --orange:      #e57514;
+      --shadow:      rgba(0,0,0,0.7);
+      --modal-bg:    rgba(0,0,0,0.84);
+      --input-bg:    #111111;
+      --header-bg:   rgba(20,20,20,0.92);
+      --letter-color:#ffffff;
+      --letter-op:   0.09;
+      --cursor-color:rgba(255,255,255,0.045);
+      --radius:      10px;
+    }
+
+    [data-theme="light"] {
+      --bg:          #f0f0f0;
+      --surface:     #ffffff;
+      --surface-h:   #f8f8f8;
+      --border:      #dedede;
+      --text:        #141414;
+      --text-sub:    #555555;
+      --text-muted:  #999999;
+      --green:       #1a7a35;
+      --yellow:      #9a7700;
+      --orange:      #b05200;
+      --shadow:      rgba(0,0,0,0.1);
+      --modal-bg:    rgba(0,0,0,0.55);
+      --input-bg:    #ffffff;
+      --header-bg:   rgba(240,240,240,0.93);
+      --letter-color:#000000;
+      --letter-op:   0.12;
+      --cursor-color:rgba(229,9,20,0.06);
+    }
+
+    /* Smooth theme transitions */
+    .theme-transitioning *,
+    .theme-transitioning *::before,
+    .theme-transitioning *::after {
+      transition:
+        background-color 0.3s ease,
+        color            0.3s ease,
+        border-color     0.3s ease,
+        box-shadow       0.3s ease !important;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Cursor light ── */
+    #cursor-light {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      will-change: background;
+    }
+
+    /* ── Background glow ── */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 55% 45% at 18% 8%,  rgba(229,9,20,0.07)  0%, transparent 65%),
+        radial-gradient(ellipse 45% 38% at 82% 88%, rgba(70,100,200,0.05) 0%, transparent 65%);
+      animation: bg-breathe 14s ease-in-out infinite alternate;
+    }
+
+    [data-theme="light"] body::before {
+      background:
+        radial-gradient(ellipse 55% 45% at 18% 8%,  rgba(229,9,20,0.05)  0%, transparent 65%),
+        radial-gradient(ellipse 45% 38% at 82% 88%, rgba(100,120,220,0.04) 0%, transparent 65%);
+    }
+
+    @keyframes bg-breathe {
+      from { opacity: 0.5; }
+      to   { opacity: 1;   }
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 60px;
+      background: var(--header-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+    }
+    .logo span { color: var(--red); }
+
+    /* Theme toggle */
+    #theme-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    #theme-btn:hover {
+      background: var(--surface-h);
+      color: var(--text);
+      transform: rotate(18deg);
+    }
+    #theme-btn svg { display: block; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 2;
+      padding: 80px 48px 64px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(229,9,20,0.12);
+      border: 1px solid rgba(229,9,20,0.28);
+      color: var(--red);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      animation: fade-up 0.5s ease 0.05s both;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 14px;
+      animation: fade-up 0.5s ease 0.15s both;
+    }
+
+    .hero-sub {
+      color: var(--text-sub);
+      font-size: 1rem;
+      max-width: 440px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+      animation: fade-up 0.5s ease 0.25s both;
+    }
+
+    /* ── Pills ── */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 26px;
+      animation: fade-up 0.5s ease 0.35s both;
+    }
+
+    .pills-label {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      align-self: center;
+      margin-right: 2px;
+    }
+
+    .pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      font-size: 0.78rem;
+      padding: 6px 13px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+    }
+    .pill:hover {
+      background: rgba(229,9,20,0.12);
+      border-color: rgba(229,9,20,0.35);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+
+    /* ── Search bar ── */
+    .search-wrap {
+      display: flex;
+      max-width: 700px;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px var(--border), 0 8px 40px var(--shadow);
+      animation: fade-up 0.5s ease 0.45s both;
+    }
+    .search-wrap:focus-within {
+      box-shadow: 0 0 0 2px rgba(229,9,20,0.45), 0 8px 40px var(--shadow);
+    }
+
+    .input-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    #query {
+      width: 100%;
+      padding: 18px 44px 18px 20px;
+      background: var(--input-bg);
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+    #query::placeholder { color: var(--text-muted); }
+
+    #clear-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 4px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+    }
+    #clear-btn:hover { color: var(--text); }
+
+    #submit-btn {
+      padding: 18px 32px;
+      background: var(--red);
+      border: none;
+      color: #fff;
+      font-size: 0.94rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    #submit-btn:hover:not(:disabled) { background: var(--red-h); }
+    #submit-btn:disabled { background: var(--text-muted); cursor: not-allowed; }
+
+    .kbd-hint {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      margin-top: 10px;
+      animation: fade-up 0.5s ease 0.55s both;
+    }
+    kbd {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace;
+      font-size: 0.68rem;
+      color: var(--text-sub);
+    }
+
+    /* ── Results section ── */
+    #results-section {
+      position: relative;
+      z-index: 2;
+      padding: 0 48px 72px;
+      display: none;
+    }
+    #results-section.visible { display: block; }
+
+    .results-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .results-count {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+    }
+    .results-count strong { color: var(--text); }
+
+    /* ── Filter tabs ── */
+    .filter-tabs { display: flex; gap: 4px; }
+
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
+      white-space: nowrap;
+    }
+    .tab:hover:not(.active) { border-color: var(--border); color: var(--text-sub); }
+    .tab.active { background: var(--text); color: var(--bg); }
+    .tab .tab-count { opacity: 0.55; font-weight: 400; margin-left: 3px; }
+
+    /* ── Card grid ── */
+    #cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      animation: card-in 0.4s ease both;
+      opacity: 0;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+    }
+    .card:hover {
+      transform: translateY(-7px) scale(1.02);
+      box-shadow: 0 24px 56px var(--shadow), 0 0 0 1px rgba(229,9,20,0.3);
+      border-color: rgba(229,9,20,0.22);
+    }
+
+    .card-vis {
+      height: 140px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-vis-letter {
+      font-size: 6rem;
+      font-weight: 900;
+      opacity: var(--letter-op);
+      color: var(--letter-color);
+      user-select: none;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .card-match-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .card-match-badge.high   { background: rgba(70,211,105,0.18); color: var(--green);  border: 1px solid rgba(70,211,105,0.3); }
+    .card-match-badge.medium { background: rgba(229,199,20,0.18); color: var(--yellow); border: 1px solid rgba(229,199,20,0.3); }
+    .card-match-badge.low    { background: rgba(229,117,20,0.18); color: var(--orange); border: 1px solid rgba(229,117,20,0.3); }
+
+    .card-type-badge {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .card-type-badge.movie { background: rgba(0,113,235,0.85); color: #fff; }
+    .card-type-badge.show  { background: rgba(70,211,105,0.85); color: #000; }
+
+    .card-body { padding: 14px 14px 12px; }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+
+    .meta-badge {
+      font-size: 0.68rem;
+      background: var(--surface-h);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    .card-genres {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Skeleton ── */
+    .skel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .skel-vis, .skel-line {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--surface-h) 50%, var(--surface) 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.5s infinite linear;
+    }
+
+    .skel-vis { height: 140px; }
+    .skel-body { padding: 14px; }
+    .skel-line { border-radius: 4px; margin-bottom: 9px; }
+
+    /* ── Empty / error states ── */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state svg { margin-bottom: 14px; opacity: 0.3; }
+    .empty-state p { font-size: 0.9rem; }
+    .error-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 40px;
+      color: var(--red);
+      font-size: 0.88rem;
+    }
+
+    /* ── Modal ── */
+    #modal {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: var(--modal-bg);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+    #modal.open { display: flex; }
+
+    .modal-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modal-in 0.22s ease both;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .modal-inner::-webkit-scrollbar { width: 5px; }
+    .modal-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 10;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #ccc;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    [data-theme="light"] .modal-close {
+      background: rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.15);
+      color: #555;
+    }
+    [data-theme="light"] .modal-close:hover { background: rgba(0,0,0,0.15); color: #000; }
+
+    .modal-vis {
+      height: 190px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .modal-vis-letter {
+      font-size: 9rem;
+      font-weight: 900;
+      opacity: var(--letter-op);
+      color: var(--letter-color);
+      user-select: none;
+      line-height: 1;
+    }
+
+    .modal-vis-badges {
+      position: absolute;
+      bottom: 14px;
+      left: 16px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .modal-body { padding: 20px 22px 24px; }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .modal-meta-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+
+    .modal-genres {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .modal-desc {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      line-height: 1.68;
+      margin-bottom: 20px;
+    }
+
+    .modal-credits {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px 16px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .credit-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-top: 1px;
+    }
+
+    .credit-value {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* ── Animations ── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0);    }
+    }
+
+    @keyframes shimmer {
+      from { background-position: -800px 0; }
+      to   { background-position:  800px 0; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      #cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      header, .hero, #results-section { padding-left: 16px; padding-right: 16px; }
+      .hero { padding-top: 48px; padding-bottom: 40px; }
+      #cards-grid { grid-template-columns: 1fr; }
+      .results-meta { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor-light"></div>
+
+<header>
+  <div class="logo" onclick="resetToHome()">TeloHive<span>Flix</span></div>
+
+  <button id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark">
+    <!-- icon injected by JS -->
+  </button>
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-badge">8,800+ titles · AI-powered search</div>
+  <h1>Find Your Next Watch</h1>
+  <p class="hero-sub">Describe the mood, vibe, or story you're after and we'll match it.</p>
+
+  <div class="pills">
+    <span class="pills-label">Try:</span>
+    <button class="pill" onclick="quickSearch('slow-burn psychological thriller')">psychological thriller</button>
+    <button class="pill" onclick="quickSearch('Korean crime drama with complex characters')">Korean crime drama</button>
+    <button class="pill" onclick="quickSearch('feel-good comedy for family night')">family comedy</button>
+    <button class="pill" onclick="quickSearch('sci-fi with deep philosophical themes')">deep sci-fi</button>
+    <button class="pill" onclick="quickSearch('true crime documentary series')">true crime doc</button>
+  </div>
+
+  <div class="search-wrap">
+    <div class="input-wrap">
+      <input type="text" id="query" autocomplete="off"
+        placeholder="e.g. a dark thriller with an unreliable narrator…" />
+      <button id="clear-btn" onclick="clearQuery()" title="Clear">✕</button>
+    </div>
+    <button id="submit-btn" onclick="search()">Search</button>
+  </div>
+  <p class="kbd-hint">Press <kbd>/</kbd> to focus · <kbd>Enter</kbd> to search · <kbd>Esc</kbd> to clear</p>
+</section>
+
+<section id="results-section">
+  <div class="results-meta">
+    <div id="results-count" class="results-count"></div>
+    <div class="filter-tabs" id="filter-tabs"></div>
+  </div>
+  <div id="cards-grid"></div>
+</section>
+
+<div id="modal" onclick="handleModalClick(event)">
+  <div class="modal-inner" id="modal-inner">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-vis" id="modal-vis">
+      <span class="modal-vis-letter" id="modal-letter"></span>
+      <div class="modal-vis-badges" id="modal-vis-badges"></div>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title"   id="modal-title"></h2>
+      <div class="modal-meta-row" id="modal-meta"></div>
+      <p class="modal-genres"   id="modal-genres"></p>
+      <p class="modal-desc"     id="modal-desc"></p>
+      <div class="modal-credits" id="modal-credits"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── State ── */
+  let allResults   = [];
+  let activeFilter = "all";
+
+  /* ── DOM refs ── */
+  const queryEl   = document.getElementById("query");
+  const clearBtn  = document.getElementById("clear-btn");
+  const submitBtn = document.getElementById("submit-btn");
+  const section   = document.getElementById("results-section");
+  const countEl   = document.getElementById("results-count");
+  const tabsEl    = document.getElementById("filter-tabs");
+  const gridEl    = document.getElementById("cards-grid");
+  const modal     = document.getElementById("modal");
+  const themeBtn  = document.getElementById("theme-btn");
+  const cursorEl  = document.getElementById("cursor-light");
+
+  /* ── Theme ── */
+  const ICONS = {
+    dark:  `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+    light: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+  };
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    themeBtn.innerHTML = theme === "dark" ? ICONS.dark : ICONS.light;
+    themeBtn.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+  }
+
+  function toggleTheme() {
+    const root  = document.documentElement;
+    const next  = root.dataset.theme === "dark" ? "light" : "dark";
+    root.classList.add("theme-transitioning");
+    applyTheme(next);
+    localStorage.setItem("telohive-theme", next);
+    setTimeout(() => root.classList.remove("theme-transitioning"), 380);
+  }
+
+  (function initTheme() {
+    const saved = localStorage.getItem("telohive-theme") || "dark";
+    applyTheme(saved);
+  })();
+
+  /* ── Cursor light ── */
+  document.addEventListener("mousemove", e => {
+    const isDark = document.documentElement.dataset.theme === "dark";
+    const color  = isDark ? "rgba(255,255,255,0.044)" : "rgba(229,9,20,0.065)";
+    const size   = isDark ? "520px" : "440px";
+    cursorEl.style.background =
+      `radial-gradient(${size} circle at ${e.clientX}px ${e.clientY}px, ${color} 0%, transparent 68%)`;
+  });
+
+  document.addEventListener("mouseleave", () => {
+    cursorEl.style.background = "none";
+  });
+
+  /* ── Keyboard ── */
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { closeModal(); return; }
+    if (e.key === "/" && document.activeElement !== queryEl) {
+      e.preventDefault();
+      queryEl.focus();
+    }
+  });
+
+  queryEl.addEventListener("input", () => {
+    clearBtn.style.display = queryEl.value ? "flex" : "none";
+  });
+  queryEl.addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+
+  /* ── Helpers ── */
+  function esc(s) {
+    const d = document.createElement("div");
+    d.textContent = s || "";
+    return d.innerHTML;
+  }
+
+  function matchClass(pct) {
+    return pct >= 88 ? "high" : pct >= 74 ? "medium" : "low";
+  }
+
+  function calcMatchPct(score, min, max) {
+    if (max === min) return 95;
+    return Math.round(68 + ((score - min) / (max - min)) * 29);
+  }
+
+  const DARK_GRAD = {
+    thriller:    "linear-gradient(140deg,#150a28,#0a0514)",
+    horror:      "linear-gradient(140deg,#1a0505,#0a0202)",
+    crime:       "linear-gradient(140deg,#05101a,#020a10)",
+    comedy:      "linear-gradient(140deg,#261505,#130a02)",
+    romance:     "linear-gradient(140deg,#260510,#130208)",
+    action:      "linear-gradient(140deg,#1a0a00,#0d0500)",
+    documentary: "linear-gradient(140deg,#001a1a,#000d0d)",
+    animation:   "linear-gradient(140deg,#07001a,#03000d)",
+    scifi:       "linear-gradient(140deg,#001525,#000a14)",
+    fantasy:     "linear-gradient(140deg,#14001a,#0a000d)",
+    drama:       "linear-gradient(140deg,#050525,#020212)",
+    default:     "linear-gradient(140deg,#1a1a1a,#0d0d0d)",
+  };
+
+  const LIGHT_GRAD = {
+    thriller:    "linear-gradient(140deg,#d8cef5,#ece5ff)",
+    horror:      "linear-gradient(140deg,#f5d0d0,#ffe8e8)",
+    crime:       "linear-gradient(140deg,#ccddf5,#e4eeff)",
+    comedy:      "linear-gradient(140deg,#f5e8cc,#fff5e0)",
+    romance:     "linear-gradient(140deg,#f5ccdc,#ffe4ef)",
+    action:      "linear-gradient(140deg,#f5d8cc,#ffede4)",
+    documentary: "linear-gradient(140deg,#ccf0f0,#e4fffe)",
+    animation:   "linear-gradient(140deg,#d0ccf5,#e8e4ff)",
+    scifi:       "linear-gradient(140deg,#cce4f5,#e4f4ff)",
+    fantasy:     "linear-gradient(140deg,#e0ccf5,#f2e4ff)",
+    drama:       "linear-gradient(140deg,#ccd4f5,#e4ebff)",
+    default:     "linear-gradient(140deg,#e8e8e8,#f4f4f4)",
+  };
+
+  function getGradient(genres) {
+    const g    = (genres || "").toLowerCase();
+    const map  = document.documentElement.dataset.theme === "light" ? LIGHT_GRAD : DARK_GRAD;
+    if (/thriller|suspense|mystery/.test(g)) return map.thriller;
+    if (/horror/.test(g))                    return map.horror;
+    if (/crime/.test(g))                     return map.crime;
+    if (/comedy/.test(g))                    return map.comedy;
+    if (/romance/.test(g))                   return map.romance;
+    if (/action|adventure/.test(g))          return map.action;
+    if (/documentar/.test(g))                return map.documentary;
+    if (/animat|anime/.test(g))              return map.animation;
+    if (/sci.?fi|science fiction/.test(g))   return map.scifi;
+    if (/fantasy/.test(g))                   return map.fantasy;
+    if (/drama/.test(g))                     return map.drama;
+    return map.default;
+  }
+
+  /* ── Skeletons ── */
+  function showSkeletons(n = 9) {
+    section.classList.add("visible");
+    countEl.innerHTML = '<span style="opacity:.35">Searching…</span>';
+    tabsEl.innerHTML  = "";
+    gridEl.innerHTML  = Array.from({ length: n }, () => `
+      <div class="skel-card">
+        <div class="skel-vis"></div>
+        <div class="skel-body">
+          <div class="skel-line" style="height:14px;width:65%"></div>
+          <div class="skel-line" style="height:10px;width:42%"></div>
+          <div class="skel-line" style="height:10px;width:100%"></div>
+          <div class="skel-line" style="height:10px;width:82%"></div>
+          <div class="skel-line" style="height:10px;width:58%"></div>
+        </div>
+      </div>`).join("");
+  }
+
+  /* ── Filter tabs ── */
+  function buildTabs(results) {
+    const movies = results.filter(r => r.type === "Movie").length;
+    const shows  = results.filter(r => r.type === "TV Show").length;
+    const tabs   = [
+      { key: "all",     label: "All",      count: results.length },
+      { key: "Movie",   label: "Movies",   count: movies         },
+      { key: "TV Show", label: "TV Shows", count: shows          },
+    ].filter(t => t.count > 0 || t.key === "all");
+
+    tabsEl.innerHTML = tabs.map(t => `
+      <button class="tab ${t.key === activeFilter ? "active" : ""}"
+              onclick="setFilter('${t.key}')">
+        ${t.label}<span class="tab-count">${t.count}</span>
+      </button>`).join("");
+  }
+
+  function setFilter(key) {
+    activeFilter = key;
+    buildTabs(allResults);
+    renderCards(key === "all" ? allResults : allResults.filter(r => r.type === key));
+  }
+
+  /* ── Render cards ── */
+  function renderCards(results) {
+    if (!results.length) {
+      gridEl.innerHTML = `
+        <div class="empty-state">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <p>No results for this filter — try another.</p>
+        </div>`;
+      return;
+    }
+
+    const min = Math.min(...results.map(r => r.score));
+    const max = Math.max(...results.map(r => r.score));
+
+    gridEl.innerHTML = results.map((r, i) => {
+      const pct     = calcMatchPct(r.score, min, max);
+      const cls     = matchClass(pct);
+      const initial = (r.title || "?")[0].toUpperCase();
+      const isMovie = r.type === "Movie";
+
+      return `
+        <div class="card" style="animation-delay:${i * 38}ms" onclick="openModal(${i}, '${activeFilter}')">
+          <div class="card-vis" style="background:${getGradient(r.genres)}">
+            <span class="card-vis-letter">${esc(initial)}</span>
+            <div class="card-match-badge ${cls}">${pct}% Match</div>
+            <span class="card-type-badge ${isMovie ? "movie" : "show"}">${esc(r.type)}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${esc(r.title)}</h3>
+            <div class="card-badges">
+              ${r.year     ? `<span class="meta-badge">${esc(r.year)}</span>`     : ""}
+              ${r.rating   ? `<span class="meta-badge">${esc(r.rating)}</span>`   : ""}
+              ${r.duration ? `<span class="meta-badge">${esc(r.duration)}</span>` : ""}
+            </div>
+            ${r.genres      ? `<p class="card-genres">${esc(r.genres)}</p>`      : ""}
+            ${r.description ? `<p class="card-desc">${esc(r.description)}</p>`   : ""}
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  /* ── Search ── */
+  async function search() {
+    const query = queryEl.value.trim();
+    if (!query) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Searching…";
+    activeFilter = "all";
+    showSkeletons(9);
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    try {
+      const resp = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, top_k: 12 }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${resp.status}`);
+      }
+
+      const data = await resp.json();
+      allResults = data.results || [];
+
+      countEl.innerHTML = allResults.length
+        ? `<strong>${allResults.length}</strong> results for &ldquo;${esc(data.query)}&rdquo;`
+        : `No results for &ldquo;${esc(data.query)}&rdquo;`;
+
+      buildTabs(allResults);
+      renderCards(allResults);
+
+    } catch (err) {
+      countEl.innerHTML = "";
+      gridEl.innerHTML  = `<div class="error-state">Error: ${esc(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Search";
+    }
+  }
+
+  function quickSearch(q) {
+    queryEl.value = q;
+    clearBtn.style.display = "flex";
+    search();
+  }
+
+  function clearQuery() {
+    queryEl.value = "";
+    clearBtn.style.display = "none";
+    queryEl.focus();
+  }
+
+  function resetToHome() {
+    queryEl.value = "";
+    clearBtn.style.display = "none";
+    section.classList.remove("visible");
+    allResults = [];
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => queryEl.focus(), 400);
+  }
+
+  /* ── Modal ── */
+  function openModal(index, filter) {
+    const pool = filter === "all" ? allResults : allResults.filter(r => r.type === filter);
+    const r    = pool[index];
+    if (!r) return;
+
+    const min = Math.min(...allResults.map(x => x.score));
+    const max = Math.max(...allResults.map(x => x.score));
+    const pct = calcMatchPct(r.score, min, max);
+    const cls = matchClass(pct);
+
+    document.getElementById("modal-vis").style.background   = getGradient(r.genres);
+    document.getElementById("modal-letter").textContent     = (r.title || "?")[0].toUpperCase();
+    document.getElementById("modal-vis-badges").innerHTML   = `
+      <span class="card-type-badge ${r.type === "Movie" ? "movie" : "show"}">${esc(r.type)}</span>
+      <span class="card-match-badge ${cls}" style="position:static;margin-left:4px">${pct}% Match</span>`;
+    document.getElementById("modal-title").textContent  = r.title;
+    document.getElementById("modal-genres").textContent = r.genres;
+    document.getElementById("modal-desc").textContent   = r.full_description || r.description;
+
+    document.getElementById("modal-meta").innerHTML = [
+      r.year     && `<span class="meta-badge">${esc(r.year)}</span>`,
+      r.rating   && `<span class="meta-badge">${esc(r.rating)}</span>`,
+      r.duration && `<span class="meta-badge">${esc(r.duration)}</span>`,
+    ].filter(Boolean).join("");
+
+    const credits = [];
+    if (r.director) credits.push(`<span class="credit-label">Director</span><span class="credit-value">${esc(r.director)}</span>`);
+    if (r.cast)     credits.push(`<span class="credit-label">Cast</span><span class="credit-value">${esc(r.cast)}</span>`);
+    if (r.country)  credits.push(`<span class="credit-label">Country</span><span class="credit-value">${esc(r.country)}</span>`);
+    const credEl = document.getElementById("modal-credits");
+    credEl.innerHTML     = credits.join("");
+    credEl.style.display = credits.length ? "grid" : "none";
+
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    modal.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function handleModalClick(e) {
+    if (e.target === modal) closeModal();
+  }
+</script>
+</body>
+</html>
