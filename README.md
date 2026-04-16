@@ -23,7 +23,7 @@ cd telohive-flix
 ### 2 — Build the image
 
 ```bash
-docker build -t telohive-flix .
+docker build -t movie-recommender .
 ```
 
 > This takes 3–5 minutes the first time — it installs dependencies, downloads the
@@ -31,17 +31,17 @@ docker build -t telohive-flix .
 
 ### 3 — Run the container
 
-**With an Anthropic API key** (enables AI-powered query expansion):
-
 ```bash
-docker run -p 8080:80 -e ANTHROPIC_API_KEY=sk-ant-... telohive-flix
+docker run -p 8080:80 movie-recommender
 ```
 
-**Without an API key** (embedding-only search, still works well):
+To enable AI-powered query expansion, pass your Anthropic API key:
 
 ```bash
-docker run -p 8080:80 telohive-flix
+docker run -p 8080:80 -e ANTHROPIC_API_KEY=sk-ant-... movie-recommender
 ```
+
+> The app works without an API key — embedding-only search still returns strong results.
 
 ### 4 — Open the app
 
