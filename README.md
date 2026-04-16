@@ -7,15 +7,47 @@ ranked titles from the Netflix catalogue (8,807 items).
 
 ## Quick Start
 
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and **running**
+  - Mac: open Docker Desktop from Applications and wait for the menu-bar whale icon to stop animating
+  - Windows: open Docker Desktop from the Start menu and wait for it to show "Engine running"
+
+### 1 — Clone the repo
+
 ```bash
-docker build -t movie-recommender .
-docker run -p 8080:80 -e ANTHROPIC_API_KEY=<your_key> movie-recommender
+git clone https://github.com/ManishKanuri/telohive-flix.git
+cd telohive-flix
 ```
 
-Open **http://localhost:8080** in your browser.
+### 2 — Build the image
 
-> `ANTHROPIC_API_KEY` enables LLM-powered query expansion.
-> The app degrades gracefully without it — embedding-only retrieval still works.
+```bash
+docker build -t telohive-flix .
+```
+
+> This takes 3–5 minutes the first time — it installs dependencies, downloads the
+> embedding model, and pre-computes embeddings for all 8,807 titles.
+
+### 3 — Run the container
+
+**With an Anthropic API key** (enables AI-powered query expansion):
+
+```bash
+docker run -p 8080:80 -e ANTHROPIC_API_KEY=sk-ant-... telohive-flix
+```
+
+**Without an API key** (embedding-only search, still works well):
+
+```bash
+docker run -p 8080:80 telohive-flix
+```
+
+### 4 — Open the app
+
+Go to **http://localhost:8080** in your browser.
+
+To stop the container press `Ctrl+C` in the terminal.
 
 ---
 
